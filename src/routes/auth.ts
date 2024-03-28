@@ -10,7 +10,7 @@ router.get(
     passport.authenticate('google', { failureRedirect: '/?error=failureRedirect' }),
     function (req, res) {
         const token = (req.user as any).token;
-        res.redirect(`http://localhost:3000/?token=${token}`);
+        res.redirect(`http://localhost:3000/login?token=${token}`);
     }
 );
 
