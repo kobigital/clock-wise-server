@@ -1,15 +1,43 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import passport from 'passport';
+import session from 'express-session';
+import oauthStrategy from './config/oauth';
+import usersRouter from './routes/users';
+import authRouter from './routes/auth';
+import { IUser } from './models/User';
+import cors from 'cors';
+
 
 // Load environment variables
-dotenv.config({ path: './.local.env' });
+dotenv.config({ path: '.local.env' })
+
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+}));
+
 // Middleware
 app.use(express.json());
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'your-session-secret',
+    resave: false,
+    saveUninitialized: false,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Passport configuration
+passport.use(oauthStrategy());
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((user: IUser, done) => done(null, user));
 
 // MongoDB Connection
 const mongoURI = process.env.MONGO_URI;
@@ -23,6 +51,18 @@ mongoose.connect(mongoURI)
     .catch((error) => console.error('Error connecting to MongoDB:', error));
 
 // Routes
+app.use('/users', usersRouter);
+
+app.use('/auth', authRouter);
+
+app.get('/api/user', (req, res) => {
+    if (req.user) {
+        res.json(req.user);
+    } else {
+        res.status(401).json({ error: 'Not authenticated' });
+    }
+});
+
 app.get('/', (req, res) => {
     res.send('Hello from the server!');
 });
