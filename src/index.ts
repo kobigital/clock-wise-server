@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import passport from 'passport';
 import session from 'express-session';
-import oauthStrategy from './config/oauth';
+import { googleOauthStrategy, jwtStrategy } from './config/oauth';
 import usersRouter from './routes/users';
 import authRouter from './routes/auth';
 import { IUser } from './models/User';
@@ -35,7 +35,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Passport configuration
-passport.use(oauthStrategy());
+passport.use(googleOauthStrategy());
+passport.use(jwtStrategy());
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((user: IUser, done) => done(null, user));
 
@@ -55,12 +56,8 @@ app.use('/users', usersRouter);
 
 app.use('/auth', authRouter);
 
-app.get('/api/user', (req, res) => {
-    if (req.user) {
-        res.json(req.user);
-    } else {
-        res.status(401).json({ error: 'Not authenticated' });
-    }
+app.get('/api/user', passport.authenticate('jwt', { session: false }), (req, res) => {
+    res.json(req.user);
 });
 
 app.get('/', (req, res) => {
