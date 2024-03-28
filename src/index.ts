@@ -6,14 +6,14 @@ import session from 'express-session';
 import { googleOauthStrategy, jwtStrategy } from './config/oauth';
 import usersRouter from './routes/users';
 import authRouter from './routes/auth';
+import clientsRoute from './routes/clients.route';
+import clocksRoute from './routes/clocks.route';
 import { IUser } from './models/User';
 import cors from 'cors';
-
+import timeIntervalsRoute from './routes/time-intervals.route';
 
 // Load environment variables
 dotenv.config({ path: '.local.env' })
-
-
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -51,9 +51,12 @@ mongoose.connect(mongoURI)
     .catch((error) => console.error('Error connecting to MongoDB:', error));
 
 // Routes
-app.use('/users', usersRouter);
-
 app.use('/auth', authRouter);
+app.use('/users', passport.authenticate('jwt', { session: false }), usersRouter);
+app.use('/api/clients', passport.authenticate('jwt', { session: false }), clientsRoute);
+app.use('/api/clocks', passport.authenticate('jwt', { session: false }), clocksRoute);
+app.use('/api/time-intervals', passport.authenticate('jwt', { session: false }), timeIntervalsRoute);
+
 
 app.get('/api/user', passport.authenticate('jwt', { session: false }), (req, res) => {
     res.json(req.user);

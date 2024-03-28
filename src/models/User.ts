@@ -8,7 +8,7 @@ export interface IUser extends Document {
     newUser: boolean;
 }
 
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema<IUser>({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     providerId: { type: String, required: true, unique: true },
