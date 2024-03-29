@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { IUser } from '../models/User';
 import { ClockDB, ClientDB } from '../db/db.interface';
-import { IClock } from '../models/Clock';
 
 const clockDB = new ClockDB();
 const clientDB = new ClientDB();
@@ -18,7 +17,6 @@ export class ClockController {
 
             // Check if the client belongs to the user
             const client = await clientDB.findById(clientId);
-            console.log({ client });
             if (!client || client.user.toString() !== userId.toString()) {
                 return res.status(403).json({ error: 'Forbidden' });
             }
@@ -26,7 +24,6 @@ export class ClockController {
             const newClock = await clockDB.create({ ...clockData, client: clientId });
             res.status(201).json(newClock);
         } catch (error) {
-            console.log({ error });
             res.status(500).json({ error: 'Internal server error' });
         }
     }

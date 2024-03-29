@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose'
-import { Clock, IClock } from './Clock';
+import { IClock } from './Clock';
 
 export interface IClient extends Document {
     name: string;

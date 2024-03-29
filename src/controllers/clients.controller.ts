@@ -42,7 +42,6 @@ export class ClientController {
             }
             const clientClocks = await clockDB.findByClient(client._id.toString())
             const clientWithClocks = { ...client.toObject(), clocks: clientClocks } as IClient
-            console.log({ clocks, intervals, clientWithClocks });
             if (!intervals || !clientWithClocks.clocks) {
                 return res.json(client);
             }
@@ -59,7 +58,6 @@ export class ClientController {
 
             res.json(clientWithClocks);
         } catch (error) {
-            console.log(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
@@ -97,7 +95,6 @@ export class ClientController {
             return res.json(clientsWithClocksAndIntervals);
 
         } catch (error) {
-            console.log(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
