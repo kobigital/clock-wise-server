@@ -1,60 +1,120 @@
-// controllers/clientController.ts
 import { Request, Response } from 'express';
-import { Clock } from '../models/Clock';
+import { IUser } from '../models/User';
+import { ClockDB, ClientDB } from '../db/db.interface';
+import { IClock } from '../models/Clock';
 
-export const getClocks = async (req: Request, res: Response) => {
-    try {
-        const clocks = await Clock.find();
-        res.json(clocks);
-    } catch (err) {
-        res.status(500).json({ message: err });
-    }
-};
+const clockDB = new ClockDB();
+const clientDB = new ClientDB();
 
-export const getClock = async (req: Request, res: Response) => {
-    try {
-        const clock = await Clock.findById(req.params.id);
-        if (clock == null) {
-            return res.status(404).json({ message: 'Cannot find clock' });
+export class ClockController {
+    async createClock(req: Request, res: Response) {
+        try {
+            const userId = (req.user as IUser)._id;
+            const clockData = req.body;
+            const clientId = clockData.client
+            if (!clientId) {
+                return res.status(400).json({ error: 'client Id is missing' });
+            }
+
+            // Check if the client belongs to the user
+            const client = await clientDB.findById(clientId);
+            console.log({ client });
+            if (!client || client.user.toString() !== userId.toString()) {
+                return res.status(403).json({ error: 'Forbidden' });
+            }
+
+            const newClock = await clockDB.create({ ...clockData, client: clientId });
+            res.status(201).json(newClock);
+        } catch (error) {
+            console.log({ error });
+            res.status(500).json({ error: 'Internal server error' });
         }
-        res.json(clock);
-    } catch (err) {
-        return res.status(500).json({ message: err });
     }
-};
 
-export const createClock = async (req: Request, res: Response) => {
-    const clock = new Clock({
-        intervals: [],
-        client: req.body.client,
-        name: req.body.name,
-        note: req.body.note
-    });
+    async getClockById(req: Request, res: Response) {
+        try {
+            const userId = (req.user as IUser)._id;
+            const clockId = req.params.id;
 
-    console.log(req.body);
+            const clock = await clockDB.findById(clockId);
+            if (!clock) {
+                return res.status(404).json({ error: 'Clock not found' });
+            }
 
-    try {
-        const newClock = await clock.save();
-        res.status(201).json(newClock);
-    } catch (err) {
-        res.status(400).json({ message: err });
+            // Check if the client belongs to the user
+            const client = await clientDB.findById(clock.client.toString());
+            if (!client || client.user.toString() !== userId.toString()) {
+                return res.status(403).json({ error: 'Forbidden' });
+            }
+
+            res.json(clock);
+        } catch (error) {
+            res.status(500).json({ error: 'Internal server error' });
+        }
     }
-};
 
-export const updateClock = async (req: Request, res: Response) => {
-    try {
-        const clock = await Clock.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        res.json(clock);
-    } catch (err) {
-        res.status(400).json({ message: err });
-    }
-};
+    async getClocksByClientId(req: Request, res: Response) {
+        try {
+            const userId = (req.user as IUser)._id;
+            const clientId = req.params.clientId;
 
-export const deleteClock = async (req: Request, res: Response) => {
-    try {
-        await Clock.findByIdAndDelete(req.params.id);
-        res.json({ message: 'Deleted clock' });
-    } catch (err) {
-        res.status(500).json({ message: err });
+            // Check if the client belongs to the user
+            const client = await clientDB.findById(clientId);
+            if (!client || client.user.toString() !== userId.toString()) {
+                return res.status(403).json({ error: 'Forbidden' });
+            }
+
+            const clocks = await clockDB.findByClient(clientId);
+            res.json(clocks);
+        } catch (error) {
+            res.status(500).json({ error: 'Internal server error' });
+        }
     }
-};
+
+    async updateClock(req: Request, res: Response) {
+        try {
+            const userId = (req.user as IUser)._id;
+            const clockId = req.params.id;
+            const updates = req.body;
+
+            const clock = await clockDB.findById(clockId);
+            if (!clock) {
+                return res.status(404).json({ error: 'Clock not found' });
+            }
+
+            // Check if the client belongs to the user
+            const client = await clientDB.findById(clock.client.toString());
+            if (!client || client.user.toString() !== userId.toString()) {
+                return res.status(403).json({ error: 'Forbidden' });
+            }
+
+            const updatedClock = await clockDB.update(clockId, updates);
+            res.json(updatedClock);
+        } catch (error) {
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+
+    async deleteClock(req: Request, res: Response) {
+        try {
+            const userId = (req.user as IUser)._id;
+            const clockId = req.params.id;
+
+            const clock = await clockDB.findById(clockId);
+            if (!clock) {
+                return res.status(404).json({ error: 'Clock not found' });
+            }
+
+            // Check if the client belongs to the user
+            const client = await clientDB.findById(clock.client.toString());
+            if (!client || client.user.toString() !== userId.toString()) {
+                return res.status(403).json({ error: 'Forbidden' });
+            }
+
+            await clockDB.delete(clockId);
+            res.sendStatus(204);
+        } catch (error) {
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+}

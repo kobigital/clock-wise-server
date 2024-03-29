@@ -1,13 +1,12 @@
-// routes/clientRoutes.ts
 import express from 'express';
-import * as clientController from '../controllers/time-interval.controller';
+import { TimeIntervalController } from '../controllers/time-interval.controller';
 
 const router = express.Router();
+const timeIntervalController = new TimeIntervalController();
 
-router.get('/', clientController.getTimeIntervals);
-router.get('/:id', clientController.getTimeInterval);
-router.post('/', clientController.createTimeInterval);
-router.put('/:id', clientController.updateTimeInterval);
-router.delete('/:id', clientController.deleteTimeInterval);
+router.post('/', timeIntervalController.createTimeInterval);
+router.get('/:id', timeIntervalController.getTimeIntervalById);
+router.put('/:id', timeIntervalController.updateTimeInterval);
+router.delete('/:id', timeIntervalController.deleteTimeInterval);
 
 export default router;

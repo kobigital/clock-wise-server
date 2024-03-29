@@ -55,7 +55,7 @@ app.use('/auth', authRouter);
 app.use('/users', passport.authenticate('jwt', { session: false }), usersRouter);
 app.use('/api/clients', passport.authenticate('jwt', { session: false }), clientsRoute);
 app.use('/api/clocks', passport.authenticate('jwt', { session: false }), clocksRoute);
-app.use('/api/time-intervals', passport.authenticate('jwt', { session: false }), timeIntervalsRoute);
+app.use('/api/timeInterval', passport.authenticate('jwt', { session: false }), timeIntervalsRoute);
 
 
 app.get('/api/user', passport.authenticate('jwt', { session: false }), (req, res) => {

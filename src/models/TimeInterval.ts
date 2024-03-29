@@ -5,9 +5,11 @@ export interface ITimeInterval extends Document {
     endAt?: Date;
     paid: number;
     paidAt?: Date;
+    clockId: Schema.Types.ObjectId;
 }
 
 const TimeIntervalSchema = new Schema<ITimeInterval>({
+    clockId: { type: Schema.Types.ObjectId, ref: 'Clock', required: true },
     startAt: { type: Date, required: true },
     endAt: Date,
     paid: { type: Number, required: true },

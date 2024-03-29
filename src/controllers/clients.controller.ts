@@ -1,73 +1,149 @@
-
 import { Request, Response } from 'express';
-import { Client } from '../models/Client';
 import { IUser } from '../models/User';
-import { ObjectId } from 'bson';
+import { ClientDB, ClockDB, TimeIntervalDB } from '../db/db.interface';
+import { IClient } from '../models/Client';
 
-export const getClients = async (req: Request, res: Response) => {
-    try {
-        const userId = (req.user as IUser)._id;
-        const clients = await Client.find({ user: new ObjectId(userId as string) }).populate({
-            path: 'clocks',
-            populate: {
-                path: 'intervals',
-                model: 'TimeInterval'
-            }
-        });
-        res.json(clients);
-    } catch (err) {
-        console.log({ err });
-        res.status(500).json({ message: err });
-    }
-};
+const clientDB = new ClientDB();
+const clockDB = new ClockDB();
+const timeIntervalDB = new TimeIntervalDB();
 
-export const getClient = async (req: Request, res: Response) => {
-    try {
-        const client = await Client.findById(req.params.id);
-        if (client == null) {
-            return res.status(404).json({ message: 'Cannot find client' });
+export class ClientController {
+    async createClient(req: Request, res: Response) {
+        try {
+            const userId = (req.user as IUser)._id;
+            const clientData = req.body;
+
+            const newClient = await clientDB.create({ ...clientData, user: userId });
+            res.status(201).json(newClient);
+        } catch (error) {
+            res.status(500).json({ error: 'Internal server error' });
         }
-        res.json(client);
-    } catch (err) {
-        return res.status(500).json({ message: err });
     }
-};
 
-export const createClient = async (req: Request, res: Response) => {
-    console.log(req.body);
-    const userId = (req.user as IUser)._id;
-    const client = new Client({
-        name: req.body.name,
-        creditTime: req.body.creditTime,
-        isFavorite: req.body.isFavorite,
-        note: req.body.note,
-        color: req.body.color,
-        user: userId,
-    });
+    async getClientById(req: Request, res: Response) {
+        try {
+            const userId = (req.user as IUser)._id;
+            const clientId = req.params.id;
 
-    try {
-        const newClient = await client.save();
-        res.status(201).json(newClient);
-    } catch (err) {
-        console.log({ err });
-        res.status(400).json({ message: err });
+            const { clocks, intervals } = req.query
+
+            const client = await clientDB.findById(clientId);
+
+            if (!client) {
+                return res.status(404).json({ error: 'Client not found' });
+            }
+            // Check if the client belongs to the user
+            if (client.user.toString() !== userId.toString()) {
+                return res.status(403).json({ error: 'Forbidden' });
+            }
+            // Add clocks and interval if asked
+            if (!clocks) {
+                return res.json(client);
+            }
+            const clientClocks = await clockDB.findByClient(client._id.toString())
+            const clientWithClocks = { ...client.toObject(), clocks: clientClocks } as IClient
+            console.log({ clocks, intervals, clientWithClocks });
+            if (!intervals || !clientWithClocks.clocks) {
+                return res.json(client);
+            }
+            const clocksWithIntervals = await Promise.all(
+                clientWithClocks.clocks.map(async (clock) => {
+                    const intervals = await timeIntervalDB.findByClockId(clock._id.toString());
+                    return { ...clock.toObject(), intervals };
+                })
+            );
+
+            clientWithClocks.clocks = clocksWithIntervals;
+
+
+
+            res.json(clientWithClocks);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
     }
-};
 
-export const updateClient = async (req: Request, res: Response) => {
-    try {
-        const client = await Client.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        res.json(client);
-    } catch (err) {
-        res.status(400).json({ message: err });
-    }
-};
+    async getClientsByUserId(req: Request, res: Response) {
+        try {
 
-export const deleteClient = async (req: Request, res: Response) => {
-    try {
-        await Client.findByIdAndDelete(req.params.id);
-        res.json({ message: 'Deleted Client' });
-    } catch (err) {
-        res.status(500).json({ message: err });
+            const userId = (req.user as IUser)._id;
+
+            const { clocks, intervals } = req.query
+
+            const clients = await clientDB.findByUser(userId);
+
+            if (!clocks) {
+                return res.json(clients);
+            }
+            // Add clocks and interval if asked
+            const clientsWithClocksAndIntervals = await Promise.all(
+                clients.map(async (client) => {
+                    const clocks = await clockDB.findByClient(client._id.toString());
+
+                    if (!intervals) {
+                        return { clocks, ...client.toObject() };
+                    }
+                    const clocksWithIntervals = await Promise.all(
+                        clocks.map(async (clock) => {
+                            const intervals = await timeIntervalDB.findByClockId(clock._id.toString());
+                            return { ...clock.toObject(), intervals };
+                        })
+                    );
+
+                    return { ...client.toObject(), clocks: clocksWithIntervals };
+                })
+            );
+            return res.json(clientsWithClocksAndIntervals);
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
     }
-};
+
+    async updateClient(req: Request, res: Response) {
+        try {
+            const userId = (req.user as IUser)._id;
+            const clientId = req.params.id;
+            const updates = req.body;
+
+            const client = await clientDB.findById(clientId);
+            if (!client) {
+                return res.status(404).json({ error: 'Client not found' });
+            }
+
+            // Check if the client belongs to the user
+            if (client.user.toString() !== userId.toString()) {
+                return res.status(403).json({ error: 'Forbidden' });
+            }
+
+            const updatedClient = await clientDB.update(clientId, updates);
+            res.json(updatedClient);
+        } catch (error) {
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+
+    async deleteClient(req: Request, res: Response) {
+        try {
+            const userId = (req.user as IUser)._id;
+            const clientId = req.params.id;
+
+            const client = await clientDB.findById(clientId);
+            if (!client) {
+                return res.status(404).json({ error: 'Client not found' });
+            }
+
+            // Check if the client belongs to the user
+            if (client.user.toString() !== userId.toString()) {
+                return res.status(403).json({ error: 'Forbidden' });
+            }
+
+            await clientDB.delete(clientId);
+            res.sendStatus(204);
+        } catch (error) {
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+}
