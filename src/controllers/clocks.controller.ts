@@ -26,8 +26,12 @@ export const getClock = async (req: Request, res: Response) => {
 export const createClock = async (req: Request, res: Response) => {
     const clock = new Clock({
         intervals: [],
-        client: req.body.client
+        client: req.body.client,
+        name: req.body.name,
+        note: req.body.note
     });
+
+    console.log(req.body);
 
     try {
         const newClock = await clock.save();

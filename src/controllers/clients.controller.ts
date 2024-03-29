@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import { Client } from '../models/Client';
 import { IUser } from '../models/User';
 import { ObjectId } from 'bson';
-import { Clock } from '../models/Clock';
 
 export const getClients = async (req: Request, res: Response) => {
     try {
