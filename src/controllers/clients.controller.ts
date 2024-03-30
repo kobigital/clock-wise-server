@@ -42,11 +42,11 @@ export class ClientController {
             }
             const clientClocks = await clockDB.findByClient(client._id.toString())
             const clientWithClocks = { ...client.toObject(), clocks: clientClocks } as IClient
-            if (!intervals || !clientWithClocks.clocks) {
-                return res.json(client);
+            if (!intervals) {
+                return res.json(clientWithClocks);
             }
             const clocksWithIntervals = await Promise.all(
-                clientWithClocks.clocks.map(async (clock) => {
+                clientWithClocks.clocks!.map(async (clock) => {
                     const intervals = await timeIntervalDB.findByClockId(clock._id.toString());
                     return { ...clock.toObject(), intervals };
                 })
