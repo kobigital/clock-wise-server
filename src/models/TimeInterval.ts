@@ -12,7 +12,7 @@ const TimeIntervalSchema = new Schema<ITimeInterval>({
     clockId: { type: Schema.Types.ObjectId, ref: 'Clock', required: true },
     startAt: { type: Date, required: true },
     endAt: Date,
-    paid: { type: Number, required: true },
+    paid: { type: Number, default: 0 },
     paidAt: Date,
 });
 

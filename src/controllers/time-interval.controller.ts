@@ -18,7 +18,7 @@ export class TimeIntervalController {
                 return res.status(403).json({ error: 'Forbidden' });
             }
 
-            const newTimeInterval = await timeIntervalDB.create(timeIntervalData, clockId);
+            const newTimeInterval = await timeIntervalDB.create({ clockId, ...timeIntervalData });
             res.status(201).json(newTimeInterval);
         } catch (error) {
             res.status(500).json({ error: 'Internal server error' });

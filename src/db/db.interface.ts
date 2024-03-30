@@ -3,7 +3,7 @@ import { Clock, IClock } from "../models/Clock";
 import { ITimeInterval, TimeInterval } from "../models/TimeInterval";
 
 interface ITimeIntervalDB {
-    create(timeInterval: Omit<ITimeInterval, 'clockId'>, clockId: string): Promise<ITimeInterval>;
+    create(data: { clockId: string; startAt: Date }): Promise<ITimeInterval>;
     findById(id: string): Promise<ITimeInterval | null>;
     findByClockId(clockId: string): Promise<ITimeInterval[]>;
     update(id: string, updates: Partial<ITimeInterval>): Promise<ITimeInterval | null>;
@@ -11,8 +11,8 @@ interface ITimeIntervalDB {
 }
 
 class TimeIntervalDB implements ITimeIntervalDB {
-    async create(timeInterval: Omit<ITimeInterval, 'clockId'>, clockId: string): Promise<ITimeInterval> {
-        const newTimeInterval = new TimeInterval({ ...timeInterval, clockId });
+    async create(data: { clockId: string; startAt: Date }): Promise<ITimeInterval> {
+        const newTimeInterval = new TimeInterval(data);
         return newTimeInterval.save();
     }
 
@@ -30,6 +30,10 @@ class TimeIntervalDB implements ITimeIntervalDB {
 
     async delete(id: string): Promise<void> {
         await TimeInterval.findByIdAndDelete(id).exec();
+    }
+
+    async findOngoingByClockId(clockId: string): Promise<ITimeInterval | null> {
+        return TimeInterval.findOne({ clockId, endAt: { $exists: false } }).exec();
     }
 }
 

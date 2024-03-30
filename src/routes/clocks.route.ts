@@ -9,6 +9,8 @@ const timeIntervalController = new TimeIntervalController();
 router.post('/', clockController.createClock);
 router.get('/:id', clockController.getClockById);
 router.put('/:id', clockController.updateClock);
+router.post('/:id/start', clockController.startClock);
+router.post('/:id/stop', clockController.stopClock);
 router.delete('/:id', clockController.deleteClock);
 router.get('/:clockId/timeIntervals', timeIntervalController.getTimeIntervalsByClockId);
 
