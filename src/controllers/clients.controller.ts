@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { IUser } from '../models/User';
 import { ClientDB, ClockDB, TimeIntervalDB } from '../db/db.interface';
 import { IClient } from '../models/Client';
+import { IClock } from '../models/Clock';
 
 const clientDB = new ClientDB();
 const clockDB = new ClockDB();
@@ -11,10 +12,16 @@ export class ClientController {
     async createClient(req: Request, res: Response) {
         try {
             const userId = (req.user as IUser)._id;
-            const clientData = req.body;
-
-            const newClient = await clientDB.create({ ...clientData, user: userId });
-            res.status(201).json(newClient);
+            const { clocks, ...clientData } = req.body;
+            const newClient = await clientDB.create({ ...clientData, userId });
+            (clocks as IClock[])?.forEach(c => {
+                c.clientId = newClient._id
+            });
+            if (clocks) {
+                const insertedClocks = await Promise.all(clocks.map(clockDB.create))
+                return res.status(201).json({ clocks: insertedClocks, ...newClient.toObject() });
+            }
+            return res.status(201).json(newClient);
         } catch (error) {
             res.status(500).json({ error: 'Internal server error' });
         }
