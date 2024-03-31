@@ -14,7 +14,7 @@ export class TimeIntervalController {
 
             // Check if the clock belongs to the user
             const clock = await clockDB.findById(clockId);
-            if (!clock || clock.client.toString() !== userId.toString()) {
+            if (!clock || clock.clientId.toString() !== userId.toString()) {
                 return res.status(403).json({ error: 'Forbidden' });
             }
 
@@ -37,7 +37,7 @@ export class TimeIntervalController {
 
             // Check if the clock belongs to the user
             const clock = await clockDB.findById(timeInterval.clockId.toString());
-            if (!clock || clock.client.toString() !== userId.toString()) {
+            if (!clock || clock.clientId.toString() !== userId.toString()) {
                 return res.status(403).json({ error: 'Forbidden' });
             }
 
@@ -54,7 +54,7 @@ export class TimeIntervalController {
 
             // Check if the clock belongs to the user
             const clock = await clockDB.findById(clockId);
-            if (!clock || clock.client.toString() !== userId.toString()) {
+            if (!clock || clock.clientId.toString() !== userId.toString()) {
                 return res.status(403).json({ error: 'Forbidden' });
             }
 
@@ -78,7 +78,7 @@ export class TimeIntervalController {
 
             // Check if the clock belongs to the user
             const clock = await clockDB.findById(timeInterval.clockId.toString());
-            if (!clock || clock.client.toString() !== userId.toString()) {
+            if (!clock || clock.clientId.toString() !== userId.toString()) {
                 return res.status(403).json({ error: 'Forbidden' });
             }
 
@@ -101,7 +101,7 @@ export class TimeIntervalController {
 
             // Check if the clock belongs to the user
             const clock = await clockDB.findById(timeInterval.clockId.toString());
-            if (!clock || clock.client.toString() !== userId.toString()) {
+            if (!clock || clock.clientId.toString() !== userId.toString()) {
                 return res.status(403).json({ error: 'Forbidden' });
             }
 

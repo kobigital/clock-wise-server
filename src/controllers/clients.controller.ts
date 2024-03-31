@@ -33,14 +33,14 @@ export class ClientController {
                 return res.status(404).json({ error: 'Client not found' });
             }
             // Check if the client belongs to the user
-            if (client.user.toString() !== userId.toString()) {
+            if (client.userId.toString() !== userId.toString()) {
                 return res.status(403).json({ error: 'Forbidden' });
             }
             // Add clocks and interval if asked
             if (!clocks) {
                 return res.json(client);
             }
-            const clientClocks = await clockDB.findByClient(client._id.toString())
+            const clientClocks = await clockDB.findByClientId(client._id.toString())
             const clientWithClocks = { ...client.toObject(), clocks: clientClocks } as IClient
             if (!intervals) {
                 return res.json(clientWithClocks);
@@ -69,7 +69,7 @@ export class ClientController {
 
             const { clocks, intervals } = req.query
 
-            const clients = await clientDB.findByUser(userId);
+            const clients = await clientDB.findByUserId(userId);
 
             if (!clocks) {
                 return res.json(clients);
@@ -77,7 +77,7 @@ export class ClientController {
             // Add clocks and interval if asked
             const clientsWithClocksAndIntervals = await Promise.all(
                 clients.map(async (client) => {
-                    const clocks = await clockDB.findByClient(client._id.toString());
+                    const clocks = await clockDB.findByClientId(client._id.toString());
 
                     if (!intervals) {
                         return { clocks, ...client.toObject() };
@@ -111,7 +111,7 @@ export class ClientController {
             }
 
             // Check if the client belongs to the user
-            if (client.user.toString() !== userId.toString()) {
+            if (client.userId.toString() !== userId.toString()) {
                 return res.status(403).json({ error: 'Forbidden' });
             }
 
@@ -133,7 +133,7 @@ export class ClientController {
             }
 
             // Check if the client belongs to the user
-            if (client.user.toString() !== userId.toString()) {
+            if (client.userId.toString() !== userId.toString()) {
                 return res.status(403).json({ error: 'Forbidden' });
             }
 

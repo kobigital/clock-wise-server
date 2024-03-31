@@ -7,7 +7,7 @@ export interface IClient extends Document {
     isFavorite: boolean;
     note?: string;
     color: string;
-    user: Schema.Types.ObjectId;
+    userId: Schema.Types.ObjectId;
     clocks?: IClock[];
 }
 
@@ -17,6 +17,6 @@ const ClientSchema = new Schema<IClient>({
     isFavorite: { type: Boolean, required: true },
     note: String,
     color: { type: String, required: true },
-    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 });
 export const Client = mongoose.model<IClient>('Client', ClientSchema);

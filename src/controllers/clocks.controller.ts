@@ -19,7 +19,7 @@ export class ClockController {
 
             // Check if the client belongs to the user
             const client = await clientDB.findById(clientId);
-            if (!client || client.user.toString() !== userId.toString()) {
+            if (!client || client.userId.toString() !== userId.toString()) {
                 return res.status(403).json({ error: 'Forbidden' });
             }
 
@@ -41,8 +41,8 @@ export class ClockController {
             }
 
             // Check if the client belongs to the user
-            const client = await clientDB.findById(clock.client.toString());
-            if (!client || client.user.toString() !== userId.toString()) {
+            const client = await clientDB.findById(clock.clientId.toString());
+            if (!client || client.userId.toString() !== userId.toString()) {
                 return res.status(403).json({ error: 'Forbidden' });
             }
 
@@ -59,11 +59,11 @@ export class ClockController {
 
             // Check if the client belongs to the user
             const client = await clientDB.findById(clientId);
-            if (!client || client.user.toString() !== userId.toString()) {
+            if (!client || client.userId.toString() !== userId.toString()) {
                 return res.status(403).json({ error: 'Forbidden' });
             }
 
-            const clocks = await clockDB.findByClient(clientId);
+            const clocks = await clockDB.findByClientId(clientId);
             res.json(clocks);
         } catch (error) {
             res.status(500).json({ error: 'Internal server error' });
@@ -82,8 +82,8 @@ export class ClockController {
             }
 
             // Check if the client belongs to the user
-            const client = await clientDB.findById(clock.client.toString());
-            if (!client || client.user.toString() !== userId.toString()) {
+            const client = await clientDB.findById(clock.clientId.toString());
+            if (!client || client.userId.toString() !== userId.toString()) {
                 return res.status(403).json({ error: 'Forbidden' });
             }
 
@@ -105,8 +105,8 @@ export class ClockController {
             }
 
             // Check if the client belongs to the user
-            const client = await clientDB.findById(clock.client.toString());
-            if (!client || client.user.toString() !== userId.toString()) {
+            const client = await clientDB.findById(clock.clientId.toString());
+            if (!client || client.userId.toString() !== userId.toString()) {
                 return res.status(403).json({ error: 'Forbidden' });
             }
 
@@ -128,8 +128,8 @@ export class ClockController {
             }
 
             // Check if the client belongs to the user
-            const client = await clientDB.findById(clock.client.toString());
-            if (!client || client.user.toString() !== userId.toString()) {
+            const client = await clientDB.findById(clock.clientId.toString());
+            if (!client || client.userId.toString() !== userId.toString()) {
                 return res.status(403).json({ error: 'Forbidden' });
             }
 
@@ -159,8 +159,8 @@ export class ClockController {
             }
 
             // Check if the client belongs to the user
-            const client = await clientDB.findById(clock.client.toString());
-            if (!client || client.user.toString() !== userId.toString()) {
+            const client = await clientDB.findById(clock.clientId.toString());
+            if (!client || client.userId.toString() !== userId.toString()) {
                 return res.status(403).json({ error: 'Forbidden' });
             }
 

@@ -16,4 +16,6 @@ const TimeIntervalSchema = new Schema<ITimeInterval>({
     paidAt: Date,
 });
 
+TimeIntervalSchema.index({ _id: 1, clockId: 1 });
+
 export const TimeInterval = mongoose.model<ITimeInterval>('TimeInterval', TimeIntervalSchema);

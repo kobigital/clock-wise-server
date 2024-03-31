@@ -40,7 +40,7 @@ class TimeIntervalDB implements ITimeIntervalDB {
 interface IClockDB {
     create(clock: Omit<IClock, '_id'>): Promise<IClock>;
     findById(id: string): Promise<IClock | null>;
-    findByClient(clientId: string): Promise<IClock[]>;
+    findByClientId(clientId: string): Promise<IClock[]>;
     update(id: string, updates: Partial<IClock>): Promise<IClock | null>;
     delete(id: string): Promise<void>;
 }
@@ -55,8 +55,8 @@ class ClockDB implements IClockDB {
         return Clock.findById(id).exec();
     }
 
-    async findByClient(clientId: string): Promise<IClock[]> {
-        return Clock.find({ client: clientId }).exec();
+    async findByClientId(clientId: string): Promise<IClock[]> {
+        return Clock.find({ clientId }).exec();
     }
 
     async update(id: string, updates: Partial<IClock>): Promise<IClock | null> {
@@ -71,7 +71,7 @@ class ClockDB implements IClockDB {
 interface IClientDB {
     create(client: Omit<IClient, '_id'>): Promise<IClient>;
     findById(id: string): Promise<IClient | null>;
-    findByUser(userId: string): Promise<IClient[]>;
+    findByUserId(userId: string): Promise<IClient[]>;
     update(id: string, updates: Partial<IClient>): Promise<IClient | null>;
     delete(id: string): Promise<void>;
 }
@@ -86,8 +86,8 @@ class ClientDB implements IClientDB {
         return await Client.findById(id);
     }
 
-    async findByUser(userId: string): Promise<IClient[]> {
-        return await Client.find({ user: userId });
+    async findByUserId(userId: string): Promise<IClient[]> {
+        return await Client.find({ userId });
     }
 
     async update(id: string, updates: Partial<IClient>): Promise<IClient | null> {
