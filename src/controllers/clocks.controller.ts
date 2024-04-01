@@ -12,7 +12,7 @@ export class ClockController {
         try {
             const userId = (req.user as IUser)._id;
             const clockData = req.body;
-            const clientId = clockData.client
+            const clientId = clockData.clientId
             if (!clientId) {
                 return res.status(400).json({ error: 'client Id is missing' });
             }
