@@ -1,11 +1,20 @@
 import mongoose, { Document } from 'mongoose';
 
+export interface IMessage {
+    name: string;
+    content: string;
+    date: Date;
+    alwaysDisplay: boolean;
+    to?: string;
+}
+
 export interface IUser extends Document {
     name: string;
     email: string;
     picture: string;
     providerId: string;
     newUser: boolean;
+    messages: IMessage[];
 }
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -14,6 +23,15 @@ const userSchema = new mongoose.Schema<IUser>({
     providerId: { type: String, required: true, unique: true },
     picture: { type: String },
     newUser: { type: Boolean, default: true },
+    messages: [
+        {
+            name: { type: String, required: true },
+            content: { type: String, required: true },
+            date: { type: Date, default: Date.now },
+            alwaysDisplay: { type: Boolean, default: false },
+            to: { type: String, required: false },
+        },
+    ],
 });
 
 export default mongoose.model<IUser>('User', userSchema, 'users');
