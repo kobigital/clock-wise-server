@@ -58,15 +58,9 @@ app.use('/api/clocks', passport.authenticate('jwt', { session: false }), clocksR
 app.use('/api/timeInterval', passport.authenticate('jwt', { session: false }), timeIntervalsRoute);
 
 
-app.get('/api/user', passport.authenticate('jwt', { session: false }), (req, res) => {
-    res.json(req.user);
-});
+app.get('/api/user', passport.authenticate('jwt', { session: false }), (req, res) => res.json(req.user));
 
-app.get('/', (req, res) => {
-    res.send('Hello from the server!');
-});
+app.get('/', (req, res) => res.send('Hello from the server!'));
 
 // Start the server
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
