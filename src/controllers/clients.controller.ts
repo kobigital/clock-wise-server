@@ -13,16 +13,20 @@ export class ClientController {
         try {
             const userId = (req.user as IUser)._id;
             const { clocks, ...clientData } = req.body;
-            const newClient = await clientDB.create({ ...clientData, userId });
+            console.log({ ...clientData, userId });
+            const newClient = await clientDB.create({ ...clientData, creditTime: 0, userId });
+            console.log(newClient);
             (clocks as IClock[])?.forEach(c => {
                 c.clientId = newClient._id
             });
+            console.log(clocks);
             if (clocks) {
                 const insertedClocks = await Promise.all(clocks.map(clockDB.create))
                 return res.status(201).json({ clocks: insertedClocks, ...newClient.toObject() });
             }
             return res.status(201).json(newClient);
         } catch (error) {
+            console.log(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
