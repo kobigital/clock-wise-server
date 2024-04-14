@@ -13,21 +13,22 @@ import cors from 'cors';
 import timeIntervalsRoute from './routes/time-intervals.route';
 
 // Load environment variables
-dotenv.config({ path: '.local.env' })
+const envFile = `.${process.env.NODE_ENV}.env`;
+dotenv.config({ path: envFile });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 
 app.use(cors({
-    origin: ['http://localhost:3000', 'chrome-extension://bgnidecdepkfhbngdcoglefhcmoobimi'],
+    origin: ['http://localhost:3000', 'chrome-extension://bgnidecdepkfhbngdcoglefhcmoobimi', 'https://clock-wise-418521.web.app'],
     credentials: true,
 }));
 
 // Middleware
 app.use(express.json());
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-session-secret',
+    secret: process.env.SESSION_SECRET!,
     resave: false,
     saveUninitialized: false,
 }));
@@ -46,7 +47,7 @@ if (!mongoURI) {
     process.exit(1);
 }
 
-mongoose.connect(mongoURI)
+mongoose.connect(mongoURI, { tlsCAFile: process.env.AWS_GLOBAL_BUNDLE, tlsAllowInvalidHostnames: true, directConnection: true, retryWrites: false, dbName: 'clockwise' })
     .then(() => console.log('Connected to MongoDB'))
     .catch((error) => console.error('Error connecting to MongoDB:', error));
 
