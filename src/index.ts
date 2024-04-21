@@ -15,7 +15,7 @@ import fs from 'fs';
 import timeIntervalsRoute from './routes/time-intervals.route';
 
 // Load environment variables
-const envFile = `./env/.${process.env.NODE_ENV}.env`;
+const envFile = `.env.${process.env.NODE_ENV}`;
 dotenv.config({ path: envFile });
 
 const app = express();

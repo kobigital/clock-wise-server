@@ -1,0 +1,13 @@
+1. connect to cloud vm
+2. add github deploy key
+3. pull repo
+4. install deps
+5. install pm2
+6. transfer env vars
+7. build project
+8. run from build over pm2: pm2 start 'npm run start:{{environment}}' --name app-name
+
+for ssl:
+1. install certbot
+2. gen cert and key using: sudo certbot certonly --manual --preferred-challenges dns -d domain.com -d www.domain.com
+3. add crontan to auto cert renew
