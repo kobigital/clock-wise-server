@@ -13,7 +13,7 @@ import cors from 'cors';
 import timeIntervalsRoute from './routes/time-intervals.route';
 
 // Load environment variables
-const envFile = `.${process.env.NODE_ENV}.env`;
+const envFile = `./env/.${process.env.NODE_ENV}.env`;
 dotenv.config({ path: envFile });
 
 const app = express();
