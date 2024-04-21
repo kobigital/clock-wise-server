@@ -75,5 +75,5 @@ if (process.env.ENV === 'stage') {
         console.log(`HTTPS Server is running on port ${PORT}`);
     })
 } else {
-    app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+    app.listen(PORT, () => console.log(`HTTP Server is running on port ${PORT}`));
 }
