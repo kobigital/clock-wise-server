@@ -32,9 +32,8 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
 }));
-app.use(passport.initialize());
-
 // Passport configuration
+app.use(passport.initialize());
 passport.use(googleOauthStrategy());
 passport.use(jwtStrategy());
 passport.serializeUser((user, done) => done(null, user));
@@ -57,10 +56,7 @@ app.use('/users', passport.authenticate('jwt', { session: false }), usersRouter)
 app.use('/api/clients', passport.authenticate('jwt', { session: false }), clientsRoute);
 app.use('/api/clocks', passport.authenticate('jwt', { session: false }), clocksRoute);
 app.use('/api/timeInterval', passport.authenticate('jwt', { session: false }), timeIntervalsRoute);
-
-
 app.get('/api/user', passport.authenticate('jwt', { session: false }), (req, res) => res.json(req.user));
-
 app.get('/', (req, res) => res.send('Hello from the server!'));
 
 // Start the server
