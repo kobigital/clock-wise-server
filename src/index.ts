@@ -22,7 +22,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-    origin: ['http://localhost:3000', 'stage.clock-wise.site', 'clock-wise.site', 'chrome-extension://bgnidecdepkfhbngdcoglefhcmoobimi', 'https://clock-wise-418521.web.app'],
+    origin: ['http://localhost:3000', 'https://stage.clock-wise.site', 'https://clock-wise.site', 'chrome-extension://bgnidecdepkfhbngdcoglefhcmoobimi'],
     credentials: true,
 }));
 
