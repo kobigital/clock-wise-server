@@ -67,6 +67,8 @@ if (process.env.ENV === 'stage') {
     const SSL_KEY_PATH = process.env.SSL_KEY_PATH;
     if (!SSL_CERT_PATH || !SSL_KEY_PATH) {
         throw { message: 'SSL Variables not found!' }
+    } else {
+        console.log(SSL_CERT_PATH.length, SSL_KEY_PATH.length);
     }
     https.createServer({
         key: fs.readFileSync(SSL_KEY_PATH),
