@@ -10,6 +10,8 @@ import clientsRoute from './routes/clients.route';
 import clocksRoute from './routes/clocks.route';
 import { IUser } from './models/User';
 import cors from 'cors';
+import https from 'https';
+import fs from 'fs';
 import timeIntervalsRoute from './routes/time-intervals.route';
 
 // Load environment variables
@@ -18,7 +20,6 @@ dotenv.config({ path: envFile });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
 
 app.use(cors({
     origin: ['http://localhost:3000', 'chrome-extension://bgnidecdepkfhbngdcoglefhcmoobimi', 'https://clock-wise-418521.web.app'],
@@ -59,5 +60,20 @@ app.use('/api/timeInterval', passport.authenticate('jwt', { session: false }), t
 app.get('/api/user', passport.authenticate('jwt', { session: false }), (req, res) => res.json(req.user));
 app.get('/', (req, res) => res.send('Hello from the server!'));
 
+
 // Start the server
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+if (process.env.ENV === 'stage') {
+    const SSL_CERT_PATH = process.env.SSL_CERT_PATH;
+    const SSL_KEY_PATH = process.env.SSL_KEY_PATH;
+    if (!SSL_CERT_PATH || !SSL_KEY_PATH) {
+        throw { message: 'SSL Variables not found!' }
+    }
+    https.createServer({
+        key: fs.readFileSync(SSL_KEY_PATH),
+        cert: fs.readFileSync(SSL_CERT_PATH),
+    }, app).listen(PORT, () => {
+        console.log(`HTTPS Server is running on port ${PORT}`);
+    })
+} else {
+    app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+}
