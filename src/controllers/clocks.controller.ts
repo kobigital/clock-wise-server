@@ -26,6 +26,7 @@ export class ClockController {
             const newClock = await clockDB.create({ ...clockData, client: clientId });
             res.status(201).json(newClock);
         } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
@@ -48,6 +49,7 @@ export class ClockController {
 
             res.json(clock);
         } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
@@ -66,6 +68,7 @@ export class ClockController {
             const clocks = await clockDB.findByClientId(clientId);
             res.json(clocks);
         } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
@@ -90,6 +93,7 @@ export class ClockController {
             const updatedClock = await clockDB.update(clockId, updates);
             res.json(updatedClock);
         } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
@@ -113,6 +117,7 @@ export class ClockController {
             await clockDB.delete(clockId);
             res.sendStatus(204);
         } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
@@ -143,7 +148,7 @@ export class ClockController {
             const newInterval = await timeIntervalDB.create({ clockId, startAt: new Date() });
             res.status(201).json(newInterval);
         } catch (error) {
-            console.log(error);
+            console.error(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
@@ -174,6 +179,7 @@ export class ClockController {
             const updatedInterval = await timeIntervalDB.update(ongoingInterval._id.toString(), { endAt: new Date() });
             res.json(updatedInterval);
         } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }

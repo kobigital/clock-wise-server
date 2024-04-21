@@ -13,20 +13,17 @@ export class ClientController {
         try {
             const userId = (req.user as IUser)._id;
             const { clocks, ...clientData } = req.body;
-            console.log({ ...clientData, userId });
             const newClient = await clientDB.create({ ...clientData, creditTime: 0, userId });
-            console.log(newClient);
             (clocks as IClock[])?.forEach(c => {
                 c.clientId = newClient._id
             });
-            console.log(clocks);
             if (clocks) {
                 const insertedClocks = await Promise.all(clocks.map(clockDB.create))
                 return res.status(201).json({ clocks: insertedClocks, ...newClient.toObject() });
             }
             return res.status(201).json(newClient);
         } catch (error) {
-            console.log(error);
+            console.error(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
@@ -69,6 +66,7 @@ export class ClientController {
 
             res.json(clientWithClocks);
         } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
@@ -106,6 +104,7 @@ export class ClientController {
             return res.json(clientsWithClocksAndIntervals);
 
         } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
@@ -129,6 +128,7 @@ export class ClientController {
             const updatedClient = await clientDB.update(clientId, updates);
             res.json(updatedClient);
         } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
@@ -151,6 +151,7 @@ export class ClientController {
             await clientDB.delete(clientId);
             res.sendStatus(204);
         } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }

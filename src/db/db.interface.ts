@@ -95,7 +95,7 @@ class ClientDB implements IClientDB {
     }
 
     async delete(id: string): Promise<void> {
-        await await Client.findByIdAndDelete(id);
+        await Client.findByIdAndDelete(id);
     }
 }
 

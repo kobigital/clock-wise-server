@@ -21,6 +21,7 @@ export class TimeIntervalController {
             const newTimeInterval = await timeIntervalDB.create({ clockId, ...timeIntervalData });
             res.status(201).json(newTimeInterval);
         } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
@@ -43,6 +44,7 @@ export class TimeIntervalController {
 
             res.json(timeInterval);
         } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
@@ -61,6 +63,7 @@ export class TimeIntervalController {
             const timeIntervals = await timeIntervalDB.findByClockId(clockId);
             res.json(timeIntervals);
         } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
@@ -85,6 +88,7 @@ export class TimeIntervalController {
             const updatedTimeInterval = await timeIntervalDB.update(timeIntervalId, updates);
             res.json(updatedTimeInterval);
         } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
@@ -108,6 +112,7 @@ export class TimeIntervalController {
             await timeIntervalDB.delete(timeIntervalId);
             res.sendStatus(204);
         } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
