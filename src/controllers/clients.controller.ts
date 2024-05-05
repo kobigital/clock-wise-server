@@ -12,8 +12,8 @@ export class ClientController {
     async createClient(req: Request, res: Response) {
         try {
             const userId = (req.user as IUser)._id;
-            const { clocks, ...clientData } = req.body;
-            const newClient = await clientDB.create({ ...clientData, creditTime: 0, userId });
+            const { clocks, isFavorite = false, creditTime = 0, color = '#fff', ...clientData } = req.body;
+            const newClient = await clientDB.create({ ...clientData, creditTime, userId, isFavorite, color });
             (clocks as IClock[])?.forEach(c => {
                 c.clientId = newClient._id
             });
