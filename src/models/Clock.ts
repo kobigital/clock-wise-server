@@ -6,13 +6,21 @@ export interface IClock extends Document {
     name: string;
     note: string;
     intervals?: ITimeInterval[];
+    isFavorite: boolean;
+    pricePerHour: number;
+    createdAt?: Date;
+    updatedAt?: Date;
+    deletedAt?: Date | null;
 }
 
 const ClientSchema = new Schema<IClock>({
     clientId: { type: Schema.Types.ObjectId, ref: 'Client', required: true },
+    isFavorite: { type: Boolean, default: false },
     name: { type: String, required: true },
-    note: { type: String, default: '' }
-});
+    note: { type: String, default: '' },
+    pricePerHour: { type: Number, required: true },
+    deletedAt: { type: Date, default: null }
+}, { timestamps: true });
 
 ClientSchema.index({ _id: 1, clientId: 1 });
 

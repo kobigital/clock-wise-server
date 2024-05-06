@@ -6,6 +6,9 @@ export interface ITimeInterval extends Document {
     paid: number;
     paidAt?: Date;
     clockId: Schema.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+    deletedAt?: Date | null;
 }
 
 const TimeIntervalSchema = new Schema<ITimeInterval>({
@@ -14,7 +17,8 @@ const TimeIntervalSchema = new Schema<ITimeInterval>({
     endAt: Date,
     paid: { type: Number, default: 0 },
     paidAt: Date,
-});
+    deletedAt: { type: Date, default: null }
+}, { timestamps: true });
 
 TimeIntervalSchema.index({ _id: 1, clockId: 1 });
 

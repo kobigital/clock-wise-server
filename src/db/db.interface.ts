@@ -1,3 +1,4 @@
+// db.interface.ts
 import { Client, IClient } from "../models/Client";
 import { Clock, IClock } from "../models/Clock";
 import { ITimeInterval, TimeInterval } from "../models/TimeInterval";
@@ -17,11 +18,11 @@ class TimeIntervalDB implements ITimeIntervalDB {
     }
 
     async findById(id: string): Promise<ITimeInterval | null> {
-        return TimeInterval.findById(id).exec();
+        return TimeInterval.findOne({ _id: id, deletedAt: null }).exec();
     }
 
     async findByClockId(clockId: string): Promise<ITimeInterval[]> {
-        return TimeInterval.find({ clockId }).exec();
+        return TimeInterval.find({ clockId, deletedAt: null }).exec();
     }
 
     async update(id: string, updates: Partial<ITimeInterval>): Promise<ITimeInterval | null> {
@@ -29,16 +30,16 @@ class TimeIntervalDB implements ITimeIntervalDB {
     }
 
     async delete(id: string): Promise<void> {
-        await TimeInterval.findByIdAndDelete(id).exec();
+        await TimeInterval.findByIdAndUpdate(id, { deletedAt: new Date() }).exec();
     }
 
     async findOngoingByClockId(clockId: string): Promise<ITimeInterval | null> {
-        return TimeInterval.findOne({ clockId, endAt: { $exists: false } }).exec();
+        return TimeInterval.findOne({ clockId, endAt: { $exists: false }, deletedAt: null }).exec();
     }
 }
 
 interface IClockDB {
-    create(clock: Omit<IClock, '_id'>): Promise<IClock>;
+    create(clock: Omit<IClock, '_id' | 'createdAt' | 'updatedAt' | 'deletedAt'>): Promise<IClock>;
     findById(id: string): Promise<IClock | null>;
     findByClientId(clientId: string): Promise<IClock[]>;
     update(id: string, updates: Partial<IClock>): Promise<IClock | null>;
@@ -46,17 +47,17 @@ interface IClockDB {
 }
 
 class ClockDB implements IClockDB {
-    async create(clock: Omit<IClock, '_id'>): Promise<IClock> {
+    async create(clock: Omit<IClock, '_id' | 'createdAt' | 'updatedAt' | 'deletedAt'>): Promise<IClock> {
         const newClock = new Clock(clock);
         return newClock.save();
     }
 
     async findById(id: string): Promise<IClock | null> {
-        return Clock.findById(id).exec();
+        return Clock.findOne({ _id: id, deletedAt: null }).exec();
     }
 
     async findByClientId(clientId: string): Promise<IClock[]> {
-        return Clock.find({ clientId }).exec();
+        return Clock.find({ clientId, deletedAt: null }).exec();
     }
 
     async update(id: string, updates: Partial<IClock>): Promise<IClock | null> {
@@ -64,12 +65,12 @@ class ClockDB implements IClockDB {
     }
 
     async delete(id: string): Promise<void> {
-        await Clock.findByIdAndDelete(id).exec();
+        await Clock.findByIdAndUpdate(id, { deletedAt: new Date() }).exec();
     }
 }
 
 interface IClientDB {
-    create(client: Omit<IClient, '_id'>): Promise<IClient>;
+    create(client: Omit<IClient, '_id' | 'createdAt' | 'updatedAt' | 'deletedAt'>): Promise<IClient>;
     findById(id: string): Promise<IClient | null>;
     findByUserId(userId: string): Promise<IClient[]>;
     update(id: string, updates: Partial<IClient>): Promise<IClient | null>;
@@ -77,17 +78,17 @@ interface IClientDB {
 }
 
 class ClientDB implements IClientDB {
-    async create(client: Omit<IClient, '_id'>): Promise<IClient> {
+    async create(client: Omit<IClient, '_id' | 'createdAt' | 'updatedAt' | 'deletedAt'>): Promise<IClient> {
         const newClient = new Client(client);
         return newClient.save();
     }
 
     async findById(id: string): Promise<IClient | null> {
-        return await Client.findById(id);
+        return await Client.findOne({ _id: id, deletedAt: null });
     }
 
     async findByUserId(userId: string): Promise<IClient[]> {
-        return await Client.find({ userId });
+        return await Client.find({ userId, deletedAt: null });
     }
 
     async update(id: string, updates: Partial<IClient>): Promise<IClient | null> {
@@ -95,7 +96,7 @@ class ClientDB implements IClientDB {
     }
 
     async delete(id: string): Promise<void> {
-        await Client.findByIdAndDelete(id);
+        await Client.findByIdAndUpdate(id, { deletedAt: new Date() });
     }
 }
 

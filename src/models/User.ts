@@ -15,6 +15,9 @@ export interface IUser extends Document {
     providerId: string;
     newUser: boolean;
     messages: IMessage[];
+    createdAt?: Date;
+    updatedAt?: Date;
+    deletedAt?: Date | null;
 }
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -32,6 +35,7 @@ const userSchema = new mongoose.Schema<IUser>({
             to: { type: String, required: false },
         },
     ],
-});
+    deletedAt: { type: Date, default: null }
+}, { timestamps: true });
 
 export default mongoose.model<IUser>('User', userSchema, 'users');
