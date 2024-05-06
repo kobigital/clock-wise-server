@@ -35,19 +35,25 @@ export class ClockController {
         try {
             const userId = (req.user as IUser)._id;
             const clockId = req.params.id;
+            const { intervals } = req.query
 
             const clock = await clockDB.findById(clockId);
             if (!clock) {
                 return res.status(404).json({ error: 'Clock not found' });
             }
 
+
             // Check if the client belongs to the user
             const client = await clientDB.findById(clock.clientId.toString());
             if (!client || client.userId.toString() !== userId.toString()) {
                 return res.status(403).json({ error: 'Forbidden' });
             }
+            if (!intervals) {
+                return res.json(clock);
+            }
+            const clockIntervals = await timeIntervalDB.findByClockId(clock._id.toString());
+            return res.json({ ...clock, intervals: clockIntervals });
 
-            res.json(clock);
         } catch (error) {
             console.error(error);
             res.status(500).json({ error: 'Internal server error' });
