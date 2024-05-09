@@ -16,7 +16,7 @@ export interface IClient extends Document {
 const ClientSchema = new Schema<IClient>({
     name: { type: String, required: true },
     isFavorite: { type: Boolean, default: false },
-    note: String,
+    note: { type: String, default: undefined },
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     deletedAt: { type: Date, default: null },
     defaultPricePerHour: { type: Number, required: true },
