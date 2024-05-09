@@ -6,6 +6,7 @@ const timeIntervalController = new TimeIntervalController();
 
 router.post('/', timeIntervalController.createTimeInterval);
 router.get('/:id', timeIntervalController.getTimeIntervalById);
+router.put('/updateBulk', timeIntervalController.updateBulk);
 router.put('/:id', timeIntervalController.updateTimeInterval);
 router.delete('/:id', timeIntervalController.deleteTimeInterval);
 

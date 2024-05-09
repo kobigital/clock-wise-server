@@ -1,7 +1,13 @@
 // db.interface.ts
+import { UpdateWriteOpResult } from "mongoose";
 import { Client, IClient } from "../models/Client";
 import { Clock, IClock } from "../models/Clock";
 import { ITimeInterval, TimeInterval } from "../models/TimeInterval";
+
+interface BulkUpdateResult {
+    successIds: string[];
+    failureIds: string[];
+}
 
 interface ITimeIntervalDB {
     create(data: { clockId: string; startAt: Date }): Promise<ITimeInterval>;
@@ -35,6 +41,23 @@ class TimeIntervalDB implements ITimeIntervalDB {
 
     async findOngoingByClockId(clockId: string): Promise<ITimeInterval | null> {
         return TimeInterval.findOne({ clockId, endAt: { $exists: false }, deletedAt: null }).exec();
+    }
+
+    async updateBulk(updates: ITimeInterval[]): Promise<BulkUpdateResult> {
+        const bulkOperations = updates.map(({ _id, ...interval }) => ({
+            updateOne: {
+                filter: { _id },
+                update: { $set: interval }
+            }
+        }));
+        const result: BulkUpdateResult = { successIds: [], failureIds: [] };
+        try {
+            const writeResult = await TimeInterval.bulkWrite(bulkOperations);
+        } catch (error) {
+            console.error(`Error updating bulk intervals: ${error}`);
+            result.failureIds = updates.map(({ _id }) => _id);
+        }
+        return result;
     }
 }
 
