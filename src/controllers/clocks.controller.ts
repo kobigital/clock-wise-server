@@ -52,7 +52,7 @@ export class ClockController {
                 return res.json(clock);
             }
             const clockIntervals = await timeIntervalDB.findByClockId(clock._id.toString());
-            return res.json({ ...clock, intervals: clockIntervals });
+            return res.json({ ...clock.toObject(), intervals: clockIntervals });
 
         } catch (error) {
             console.error(error);
