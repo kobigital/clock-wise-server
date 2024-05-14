@@ -6,7 +6,7 @@ First Deploy
 5. install pm2
 6. transfer env vars
 7. build project
-8. run from build over pm2: pm2 start 'npm run start:{{environment}}' --name app-name
+8. run from build over pm2: pm2 start 'npm run start:{{environment}}' --name clockwise-server
 
 Update:
 1. connect to cloud vm (connect-to-stage script)
