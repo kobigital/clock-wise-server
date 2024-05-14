@@ -22,6 +22,8 @@ const ClientSchema = new Schema<IClient>({
     defaultPricePerHour: { type: Number, required: true },
 }, { timestamps: true });
 
+ClientSchema.index({ _id: 1, userId: 1 });
+
 export const Client = mongoose.model<IClient>('Client', ClientSchema);
 
 

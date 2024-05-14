@@ -13,7 +13,7 @@ export interface IClock extends Document {
     deletedAt?: Date | null;
 }
 
-const ClientSchema = new Schema<IClock>({
+const ClockSchema = new Schema<IClock>({
     clientId: { type: Schema.Types.ObjectId, ref: 'Client', required: true },
     isFavorite: { type: Boolean, default: false },
     name: { type: String, required: true },
@@ -22,6 +22,6 @@ const ClientSchema = new Schema<IClock>({
     deletedAt: { type: Date, default: null }
 }, { timestamps: true });
 
-ClientSchema.index({ _id: 1, clientId: 1 });
+ClockSchema.index({ _id: 1, clientId: 1 });
 
-export const Clock = mongoose.model<IClock>('Clock', ClientSchema);
+export const Clock = mongoose.model<IClock>('Clock', ClockSchema);
