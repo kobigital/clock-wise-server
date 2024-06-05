@@ -1,13 +1,15 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import { ITimeInterval } from './TimeInterval';
 
+
 export interface IClock extends Document {
     clientId: Schema.Types.ObjectId;
     name: string;
     note: string;
     intervals?: ITimeInterval[];
     isFavorite: boolean;
-    pricePerHour: number;
+    pricePerHour?: number;
+    fixedPrice?: number;
     createdAt?: Date;
     updatedAt?: Date;
     deletedAt?: Date | null;
@@ -19,6 +21,7 @@ const ClockSchema = new Schema<IClock>({
     name: { type: String, required: true },
     note: { type: String, default: '' },
     pricePerHour: { type: Number, required: true },
+    fixedPrice: { type: Number },
     deletedAt: { type: Date, default: null }
 }, { timestamps: true });
 
