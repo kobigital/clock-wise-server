@@ -8,11 +8,13 @@ export interface IClock extends Document {
     note: string;
     intervals?: ITimeInterval[];
     isFavorite: boolean;
-    pricePerHour?: number;
-    fixedPrice?: number;
     createdAt?: Date;
     updatedAt?: Date;
     deletedAt?: Date | null;
+    // should passed to object 
+    pricePerHour?: number;
+    fixedPrice?: number;
+    isPriceIsFixed: boolean;
 }
 
 const ClockSchema = new Schema<IClock>({
@@ -22,6 +24,7 @@ const ClockSchema = new Schema<IClock>({
     note: { type: String, default: '' },
     pricePerHour: { type: Number, required: true },
     fixedPrice: { type: Number },
+    isPriceIsFixed: { type: Boolean, default: false },
     deletedAt: { type: Date, default: null }
 }, { timestamps: true });
 
